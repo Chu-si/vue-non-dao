@@ -1,4 +1,7 @@
 const path = require("path");
+// const CompressionWebpackPlugin = require('compression-webpack-plugin')
+// const productionGzipExtensions = ['js', 'css']
+// const isProduction = process.env.NODE_ENV === 'production'
 module.exports = {
   // 基本路径
   publicPath: process.env.NODE_ENV === "production" ? "" : "/",
@@ -7,7 +10,9 @@ module.exports = {
   /**
    * webpack配置,
    **/
-  chainWebpack: (config) => {},
+  chainWebpack: (config) => {
+    config.resolve.symlinks(true);
+  },
   configureWebpack: {
     resolve: {
       alias: {
@@ -26,13 +31,13 @@ module.exports = {
   // css相关配置
   css: {
     // 是否使用css分离插件 ExtractTextPlugin
-    extract: true,
+    extract: false,
     // 开启 CSS source maps?
     sourceMap: false,
     // css预设器配置项
     loaderOptions: {
       scss: {
-        prependData: `@import "./src/assets/main.scss";`,
+        prependData: `@import "@/assets/css/main.scss";`,
       },
     },
   },
@@ -51,12 +56,14 @@ module.exports = {
     https: false, // 编译失败时刷新页面
     hot: true, // 开启热加载
     hotOnly: false,
+    compress: true,
+    disableHostCheck: true, //webpack4.0 开启热更新
     proxy: {
-      "/devApi": {
-        target: "http://www.web-jshtml.cn/productapi/token", //API服务器的地址
+      "/": {
+        target: "http://60.168.18.161:18080/", //API服务器的地址
         changeOrigin: true,
         pathRewrite: {
-          "^/devApi": "",
+          "^/": "/",
         },
       },
     },
@@ -72,4 +79,16 @@ module.exports = {
    * 第三方插件配置
    */
   pluginOptions: {},
+  // configureWebpack: (config) => {
+  //   if (isProduction) {
+  //     config.plugins.push(
+  //       new CompressionWebpackPlugin({
+  //         algorithm: "gzip",
+  //         test: new RegExp("\\.(" + productionGzipExtensions.join("|") + ")$"),
+  //         threshold: 10240,
+  //         minRatio: 0.8,
+  //       })
+  //     );
+  //   }
+  // },
 };
